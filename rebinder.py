@@ -9,7 +9,7 @@ UPSTREAM_DNS = ("127.0.0.53", 53)
 # globally you'd need a domain you control)
 REBIND_NAME = "rb.evil.com"
 
-BENIGN_IP = "1.2.3.4"
+BENIGN_IP = "57.144.168.1"
 INTERNAL_IP = "169.254.169.254"
 
 
