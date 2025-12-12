@@ -15,7 +15,7 @@ def resize():
     
     try:
         print(f"[APP] FETCHING → {url}")
-        resp = requests.get(url, timeout=5, verify=False)
+        resp = requests.get(url, timeout=5)
         return f"SUCCESS: {resp.content[:100].hex()}\n", 200
     except Exception as e:
         return f"Failed: {e}\n", 500
