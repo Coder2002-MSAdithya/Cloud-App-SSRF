@@ -4,6 +4,7 @@ import requests
 from io import BytesIO
 from PIL import Image
 import re
+import time
 
 app = Flask(__name__)
 ssrf_protect = SSRFProtection(["169.254.169.254", "127.0.0.1"])
@@ -61,7 +62,7 @@ def extract_title(html_bytes: bytes) -> str | None:
         m = re.search(r"<title[^>]*>(.*?)</title>", text, re.IGNORECASE | re.DOTALL)
         if m:
             # Collapse whitespace inside the title
-            return " ".join(m.group(1).split())
+            return " ".join(m.group(1).split()) + "\n"
         return None
     except Exception:
         return None
@@ -91,17 +92,19 @@ def negative_image(image_bytes: bytes) -> tuple[bytes, str]:
 def resize():
     url = request.args.get("url")
     if not url:
-        return "No URL", 400
+        return "No URL\n", 400
 
     # SSRF protection (IP-based)
     if not ssrf_protect.is_safe(url):
-        return "BLOCKED by SSRFProtection", 403
+        return "BLOCKED by SSRFProtection\n", 403
+    
+    time.sleep(3)
 
     try:
         print(f"[APP] FETCHING → {url}")
         resp = requests.get(url, timeout=5, stream=True)
     except Exception as e:
-        return f"Failed to fetch: {e}", 502
+        return f"Failed to fetch: {e}\n", 502
 
     # JSON → return as-is
     if is_json_content(resp):
@@ -117,7 +120,7 @@ def resize():
         title = extract_title(resp.content)
         if title:
             return f"HTML title: {title}", 200
-        return "HTML document has no detectable <title>", 200
+        return "HTML document has no detectable <title>\n", 200
 
     # Image → return negative
     if is_image_content(resp):
@@ -125,10 +128,10 @@ def resize():
             neg_bytes, subtype = negative_image(resp.content)
             return Response(neg_bytes, mimetype=f"image/{subtype}")
         except Exception as e:
-            return f"Failed to process image: {e}", 500
+            return f"Failed to process image: {e}\n", 500
 
     # Unknown type
-    return f"Unknown or unsupported Content-Type: {resp.headers.get('Content-Type')}", 400
+    return f"Unknown or unsupported Content-Type: {resp.headers.get('Content-Type')}\n", 400
 
 
 if __name__ == "__main__":
