@@ -9,6 +9,7 @@ import time
 app = Flask(__name__)
 ssrf_protect = SSRFProtection(["169.254.169.254", "127.0.0.1"])
 
+
 @app.route("/")
 def index():
     html = """
@@ -18,7 +19,7 @@ def index():
         <title>Image Resizer / SSRF Demo</title>
       </head>
       <body>
-        <h1>Image Resizer / SSRF Demo Service</h1>
+        <h1>Image Resizer / SSRF Demo Service [Service 2]</h1>
         <p>
           This microservice fetches a URL provided by the client, inspects the response,
           and transforms it based on its type:
@@ -91,19 +92,19 @@ def negative_image(image_bytes: bytes) -> tuple[bytes, str]:
 def resize():
     url = request.args.get("url")
     if not url:
-        return "No URL\n", 400
+        return "[Service 2] No URL\n", 400
 
     # SSRF protection (IP-based)
     if not ssrf_protect.is_safe(url):
-        return "BLOCKED by SSRFProtection\n", 403
+        return "[Service 2] BLOCKED by SSRFProtection\n", 403
     
     time.sleep(3)
 
     try:
-        print(f"[APP] FETCHING → {url}")
+        print(f"[Service 2] FETCHING → {url}")
         resp = requests.get(url, timeout=5, stream=True)
     except Exception as e:
-        return f"Failed to fetch: {e}\n", 502
+        return f"[Service 2] Failed to fetch: {e}\n", 502
 
     # JSON → return as-is
     if is_json_content(resp):
@@ -118,8 +119,8 @@ def resize():
     if is_html_content(resp):
         title = extract_title(resp.content)
         if title:
-            return f"HTML title: {title}", 200
-        return "HTML document has no detectable <title>\n", 200
+            return f"[Service 2] HTML title: {title}", 200
+        return "[Service 2] HTML document has no detectable <title>\n", 200
 
     # Image → return negative
     if is_image_content(resp):
@@ -127,11 +128,11 @@ def resize():
             neg_bytes, subtype = negative_image(resp.content)
             return Response(neg_bytes, mimetype=f"image/{subtype}")
         except Exception as e:
-            return f"Failed to process image: {e}\n", 500
+            return f"[Service 2] Failed to process image: {e}\n", 500
 
     # Unknown type
-    return f"Unknown or unsupported Content-Type: {resp.headers.get('Content-Type')}\n", 400
+    return f"[Service 2] Unknown or unsupported Content-Type: {resp.headers.get('Content-Type')}\n", 400
 
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=80, debug=False)
+    app.run(host="10.10.0.11", port=80, debug=False)
