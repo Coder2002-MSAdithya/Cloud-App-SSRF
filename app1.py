@@ -97,8 +97,6 @@ def resize():
     if not ssrf_protect.is_safe(url):
         return "[Service 1] BLOCKED by SSRFProtection\n", 403
     
-    time.sleep(3)
-
     try:
         print(f"[Service 1] FETCHING → {url}")
         resp = requests.get(url, timeout=5, stream=True)
@@ -134,4 +132,4 @@ def resize():
 
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=80, debug=False)
+    app.run(host="127.0.0.1", port=8081, debug=False)
