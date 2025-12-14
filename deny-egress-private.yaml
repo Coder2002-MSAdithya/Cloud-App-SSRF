@@ -1,0 +1,9 @@
+apiVersion: policy.linkerd.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: deny-private-egress
+  namespace: ssrf
+spec:
+  requiredAuthenticationRefs:
+  - kind: NetworkAuthentication
+    name: rfc1918-and-linklocal

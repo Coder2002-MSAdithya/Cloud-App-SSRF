@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: metadata-nat
+  namespace: ssrf
+spec:
+  selector:
+    matchLabels:
+      app: metadata-nat
+  template:
+    metadata:
+      labels:
+        app: metadata-nat
+    spec:
+      hostNetwork: true
+      hostPID: true
+      containers:
+      - name: nat
+        image: alpine:3.19
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          privileged: true
+        command:
+        - sh
+        - -c
+        - |
+          apk add --no-cache iptables
+          iptables -t nat -A PREROUTING \
+            -d 169.254.169.254 -p tcp --dport 80 \
+            -j DNAT --to-destination 127.0.0.1:80
+          sleep infinity

@@ -1,6 +1,6 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
-HOST = "169.254.169.254"
+HOST = "0.0.0.0"
 PORT = 80
 
 FAKE_CREDS = b"""{

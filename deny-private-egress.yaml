@@ -1,0 +1,15 @@
+apiVersion: policy.linkerd.io/v1alpha1
+kind: EgressNetwork
+metadata:
+  name: deny-private-networks
+  namespace: ssrf
+spec:
+  trafficPolicy: Deny
+  networks:
+    # RFC1918
+    - cidr: 10.0.0.0/8
+    - cidr: 172.16.0.0/12
+    - cidr: 192.168.0.0/16
+
+    # Link-local (IMDS)
+    - cidr: 169.254.0.0/16

@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: metadata
+  namespace: ssrf
+spec:
+  selector:
+    matchLabels:
+      app: metadata
+  template:
+    metadata:
+      labels:
+        app: metadata
+    spec:
+      hostNetwork: true
+      containers:
+      - name: metadata
+        image: adithyams2002/ssrf-app:latest
+        command: ["python", "metadata_server.py"]
+        securityContext:
+          privileged: true
