@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: imds-simulator
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      app: imds-simulator
+  template:
+    metadata:
+      labels:
+        app: imds-simulator
+    spec:
+      hostNetwork: true
+      hostPID: true
+      tolerations:
+        - operator: Exists
+      containers:
+        - name: imds
+          image: python:3.11-slim
+          securityContext:
+            privileged: true
+          command:
+            - sh
+            - -c
+            - |
+              set -e
+
+              echo "[+] Installing dependencies"
+              apt-get update -qq
+              apt-get install -y iptables
+
+              echo "[+] Writing IMDS server"
+              cat << 'EOF' > /imds.py
+              from http.server import BaseHTTPRequestHandler, HTTPServer
+              import json
+
+              class IMDS(BaseHTTPRequestHandler):
+                  def do_GET(self):
+                      self.send_response(200)
+                      self.send_header("Content-Type", "application/json")
+                      self.end_headers()
+                      self.wfile.write(json.dumps({
+                          "Code": "Success",
+                          "AccessKeyId": "FAKEACCESSKEY123",
+                          "SecretAccessKey": "FAKESECRETKEY456",
+                          "Token": "FAKETOKEN789"
+                      }).encode())
+
+              HTTPServer(("127.0.0.1", 80), IMDS).serve_forever()
+              EOF
+
+              echo "[+] Starting IMDS server on 127.0.0.1:80"
+              python3 /imds.py &
+
+              sleep 2
+
+              echo "[+] Installing DNAT rule for 169.254.169.254"
+              iptables -t nat -A PREROUTING \
+                -d 169.254.169.254 -p tcp --dport 80 \
+                -j DNAT --to-destination 127.0.0.1:80
+
+              echo "[+] IMDS simulator active"
+              sleep infinity

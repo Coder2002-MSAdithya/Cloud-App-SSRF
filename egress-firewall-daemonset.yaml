@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: node-egress-firewall
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      app: node-egress-firewall
+  template:
+    metadata:
+      labels:
+        app: node-egress-firewall
+    spec:
+      hostNetwork: true
+      hostPID: true
+      tolerations:
+        - operator: Exists
+      containers:
+        - name: firewall
+          image: alpine:3.19
+          securityContext:
+            privileged: true
+          command:
+            - sh
+            - -c
+            - |
+              apk add --no-cache iptables iproute2
+
+              echo "[+] Reset FORWARD chain"
+              iptables -F FORWARD
+              iptables -P FORWARD ACCEPT
+
+              # Allow established flows
+              iptables -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+
+              # Allow pod-to-pod traffic
+              iptables -A FORWARD -d 10.244.0.0/16 -j ACCEPT
+
+              # Allow Docker bridge (kind)
+              iptables -A FORWARD -d 172.18.0.0/16 -j ACCEPT
+
+              echo "[+] Blocking IMDS + private ranges in FORWARD"
+
+              # Block IMDS
+              iptables -A FORWARD -d 169.254.0.0/16 -j REJECT
+
+              # Block RFC1918 except allowed
+              iptables -A FORWARD -d 10.0.0.0/8 ! -d 10.244.0.0/16 -j REJECT
+              iptables -A FORWARD -d 172.16.0.0/12 ! -d 172.18.0.0/16 -j REJECT
+              iptables -A FORWARD -d 192.168.0.0/16 -j REJECT
+
+              echo "[+] FORWARD firewall active"
+              sleep infinity

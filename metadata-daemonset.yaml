@@ -13,9 +13,25 @@ spec:
         app: metadata
     spec:
       hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
       containers:
       - name: metadata
-        image: adithyams2002/ssrf-app:latest
-        command: ["python", "metadata_server.py"]
+        image: python:3.11-slim
         securityContext:
           privileged: true
+        command:
+          - sh
+          - -c
+          - |
+            apt-get update && apt-get install -y iproute2 || true
+            ip addr show lo | grep 169.254.169.254 || \
+              ip addr add 169.254.169.254/32 dev lo
+            python /imds.py
+        volumeMounts:
+        - name: imds-script
+          mountPath: /imds.py
+          subPath: imds.py
+      volumes:
+      - name: imds-script
+        configMap:
+          name: metadata-script

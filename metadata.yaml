@@ -16,7 +16,7 @@ spec:
       hostNetwork: true
       containers:
       - name: metadata
-        image: adithyams2002/ssrf-app:latest
+        image: ssrf-app
         command: ["python", "metadata_server.py"]
         imagePullPolicy: IfNotPresent
         securityContext:
