@@ -2,7 +2,7 @@
 
 This assignment demonstrates a **Server-Side Request Forgery (SSRF)** vulnerability caused by
 **DNS rebinding**, and shows how enforcing **host-level egress controls** effectively
-prevents the attack. The entire setup runs locally and does not rely on any cloud provider.
+prevents the attack. The entire setup runs locally.
 
 > **Repository note:**  
 > The complete and working host-based demonstration and mitigation are implemented in the
