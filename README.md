@@ -30,7 +30,7 @@ despite validation (by sending request to the metadata IP).
 ## System Overview
 
 The setup consists of:
-- Three Python microservices that fetch user-supplied URLs
+- Three Python microservices (can be generalized to many) that fetch user-supplied URLs
 - A fake metadata service simulating a cloud Instance Metadata Service (IMDS)
 - An attacker-controlled DNS domain `rb.adithya-ms.co.in` (subdomain of `adithya-ms.co.in` I have purchased) used for rebinding
 - Host-level egress filtering using `iptables`
