@@ -20,8 +20,8 @@ actual network request is made.
 
 In the context of SSRF, this creates a **time-of-check–to–time-of-use (TOCTOU)** flaw
 
-The Python microservices are vulnerable to a DNS rebinding base SSRF because ssrf lib.py performs a single socket.gethostbyname()
-validation during URL parsing but trusts the second DNS resolution performed by requests.get(),
+The Python microservices are vulnerable to a DNS rebinding base SSRF because ssrf lib.py performs a single `socket.gethostbyname()`
+validation during URL parsing but trusts the second DNS resolution performed by `requests.get()`,
 allowing rebinding attacks to succeed, as a result of which sensitive metadata can be retrieved
 despite validation (by sending request to the metadata IP).
 
