@@ -1,6 +1,6 @@
 # DNS Rebinding–Based SSRF: Host-Level Demonstration and Mitigation
 
-This project demonstrates a **Server-Side Request Forgery (SSRF)** vulnerability caused by
+This assignment demonstrates a **Server-Side Request Forgery (SSRF)** vulnerability caused by
 **DNS rebinding**, and shows how enforcing **host-level egress controls** effectively
 prevents the attack. The entire setup runs locally and does not rely on any cloud provider.
 
@@ -32,7 +32,7 @@ despite validation (by sending request to the metadata IP).
 The setup consists of:
 - Three Python microservices that fetch user-supplied URLs
 - A fake metadata service simulating a cloud Instance Metadata Service (IMDS)
-- An attacker-controlled DNS domain `rb.adithya-ms.co.in` used for rebinding
+- An attacker-controlled DNS domain `rb.adithya-ms.co.in` (subdomain of `adithya-ms.co.in` I have purchased) used for rebinding
 - Host-level egress filtering using `iptables`
 
 Each microservice performs naive SSRF protection by resolving the hostname and checking the
@@ -50,12 +50,12 @@ interface using the provided script:
 sudo ./bind.sh
 ```
 ### 2. Run the metadata service
-Start the fake metadata service, which listens on 169.254.169.254:80
+Start the fake metadata service, which listens on `169.254.169.254:80`
 ```bash
 sudo python3 metadata_server.py
 ```
 ### 3. Run the Python apps
-Start the three microservices in separate terminals:
+Start the three microservices in separate terminals (different from the metadata_service as well):
 ```bash
 python3 app1.py   # port 8081
 python3 app2.py   # port 8082
