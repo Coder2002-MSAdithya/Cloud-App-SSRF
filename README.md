@@ -32,7 +32,7 @@ despite validation (by sending request to the metadata IP).
 The setup consists of:
 - Three Python microservices that fetch user-supplied URLs
 - A fake metadata service simulating a cloud Instance Metadata Service (IMDS)
-- An attacker-controlled DNS domain used for rebinding
+- An attacker-controlled DNS domain `rb.adithya-ms.co.in` used for rebinding
 - Host-level egress filtering using `iptables`
 
 Each microservice performs naive SSRF protection by resolving the hostname and checking the
