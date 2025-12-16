@@ -66,7 +66,7 @@ Each service accepts a URL parameter and attempts to fetch it.```
 ### 4. Trigger the SSRF
 To make DNS rebinding work on `rb.adithya-ms.co.in`, the parent zone `adithya-ms.co.in`
 was configured to delegate this subdomain to a custom nameserver. An NS record for `rb.adithya-ms.co.in`
-was added, pointing to ns1.adithya-ms.co.in. An A record mapped `ns1.adithya-ms.co.in`
+was added, pointing to `ns1.adithya-ms.co.in`. An A record mapped `ns1.adithya-ms.co.in`
 to the VPS public IP running `rebinder_actual.py`, the Python nameserver code for this sub-
 domain. All queries for rb.adithya-ms.co.in are now answered by this attacker-controlled
 rebinding server.
