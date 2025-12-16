@@ -11,6 +11,9 @@ prevents the attack. The entire setup runs locally.
 
 ---
 
+## Prerequisites and Requirements
+It is required to have `python3`, `pip` and `flask` and its dependencies installed. It is also recommended to have your own VPS and domain name so that you can change the values in `rebinder_actual.py` to have your own DNS server running for a subdomain of your domain name, and delegate the subdomain to your DNS server VPS by adding appropriate NS and A records to your main domain's name server
+
 ## What is DNS Rebinding?
 
 DNS rebinding is an attack technique where a single domain name resolves to different IP
